@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apex Eagle - Paid Scrims</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="loading-screen">
+            <div class="loader"></div>
+            <p>🦅 Apex Eagle Loading...</p>
+        </div>
+
+        <!-- Login Page -->
+        <div id="login-page" class="page hidden">
+            <div class="auth-container">
+                <div class="auth-card">
+                    <div class="logo">🦅</div>
+                    <h1>Apex Eagle</h1>
+                    <p class="subtitle">Paid Scrims & Tournaments</p>
+                    
+                    <div class="auth-tabs">
+                        <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+                        <button class="tab-btn" onclick="switchTab('signup')">Sign Up</button>
+                    </div>
+
+                    <!-- Login Form -->
+                    <form id="login-form" class="auth-form active-form">
+                        <input type="email" placeholder="Email" id="login-email" required>
+                        <input type="password" placeholder="Password" id="login-password" required>
+                        <button type="submit" class="auth-btn">Login</button>
+                    </form>
+
+                    <!-- Signup Form -->
+                    <form id="signup-form" class="auth-form">
+                        <input type="text" placeholder="Full Name" id="signup-name" required>
+                        <input type="email" placeholder="Email" id="signup-email" required>
+                        <input type="text" placeholder="Free Fire UID" id="signup-uid" required>
+                        <input type="password" placeholder="Password" id="signup-password" required>
+                        <input type="password" placeholder="Confirm Password" id="signup-confirm" required>
+                        <button type="submit" class="auth-btn">Create Account</button>
+                    </form>
+
+                    <!-- Social Login -->
+                    <div class="divider">OR</div>
+                    <button type="button" class="social-btn google-btn" onclick="loginWithGoogle()">
+                        <span>🔵</span> Login with Google
+                    </button>
+
+                    <p class="auth-footer">By continuing, you agree to our Terms & Conditions</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard-page" class="page hidden">
+            <nav class="navbar">
+                <div class="nav-brand">🦅 Apex Eagle</div>
+                <div class="nav-menu">
+                    <a href="#" onclick="showPage('dashboard')" class="nav-link active">Home</a>
+                    <a href="#" onclick="showPage('leaderboard')" class="nav-link">Leaderboard</a>
+                    <a href="#" onclick="showPage('profile')" class="nav-link">Profile</a>
+                    <a href="#" onclick="showPage('admin')" class="nav-link admin-link" id="admin-link" style="display:none;">Admin</a>
+                    <button onclick="logout()" class="nav-btn logout-btn">Logout</button>
+                </div>
+            </nav>
+
+            <div class="dashboard-container">
+                <!-- Wallet Section -->
+                <div class="wallet-card">
+                    <div class="wallet-header">
+                        <h3>💰 Your Wallet</h3>
+                        <div class="wallet-balance" id="wallet-balance">₹ 0.00</div>
+                    </div>
+                    <button onclick="openAddMoneyModal()" class="wallet-btn">+ Add Money</button>
+                </div>
+
+                <!-- Active Matches -->
+                <section class="section">
+                    <h2>🎮 Live Tournaments</h2>
+                    <div id="matches-container" class="matches-grid">
+                        <!-- Matches will be loaded here -->
+                    </div>
+                </section>
+
+                <!-- Create Match (Admin) -->
+                <section class="section" id="admin-create-section" style="display:none;">
+                    <h2>+ Create New Match</h2>
+                    <button onclick="openCreateMatchModal()" class="create-match-btn">Create Tournament</button>
+                </section>
+            </div>
+        </div>
+
+        <!-- Leaderboard -->
+        <div id="leaderboard-page" class="page hidden">
+            <nav class="navbar">
+                <div class="nav-brand">🦅 Apex Eagle</div>
+                <div class="nav-menu">
+                    <a href="#" onclick="showPage('dashboard')" class="nav-link">Home</a>
+                    <a href="#" onclick="showPage('leaderboard')" class="nav-link active">Leaderboard</a>
+                    <a href="#" onclick="showPage('profile')" class="nav-link">Profile</a>
+                    <button onclick="logout()" class="nav-btn logout-btn">Logout</button>
+                </div>
+            </nav>
+
+            <div class="leaderboard-container">
+                <h1>🏆 Global Leaderboard</h1>
+                <div class="leaderboard-filters">
+                    <button class="filter-btn active" onclick="filterLeaderboard('all')">All Time</button>
+                    <button class="filter-btn" onclick="filterLeaderboard('weekly')">Weekly</button>
+                    <button class="filter-btn" onclick="filterLeaderboard('monthly')">Monthly</button>
+                </div>
+                <table class="leaderboard-table" id="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Player</th>
+                            <th>Wins</th>
+                            <th>Earnings</th>
+                            <th>Rating</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body">
+                        <!-- Will be filled by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Profile -->
+        <div id="profile-page" class="page hidden">
+            <nav class="navbar">
+                <div class="nav-brand">🦅 Apex Eagle</div>
+                <div class="nav-menu">
+                    <a href="#" onclick="showPage('dashboard')" class="nav-link">Home</a>
+                    <a href="#" onclick="showPage('leaderboard')" class="nav-link">Leaderboard</a>
+                    <a href="#" onclick="showPage('profile')" class="nav-link active">Profile</a>
+                    <button onclick="logout()" class="nav-btn logout-btn">Logout</button>
+                </div>
+            </nav>
+
+            <div class="profile-container">
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar" id="profile-avatar">👤</div>
+                        <div class="profile-info">
+                            <h2 id="profile-name">Player Name</h2>
+                            <p id="profile-uid">UID: 12345678</p>
+                        </div>
+                    </div>
+
+                    <div class="profile-stats">
+                        <div class="stat">
+                            <span class="stat-value" id="stat-matches">0</span>
+                            <span class="stat-label">Matches</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="stat-wins">0</span>
+                            <span class="stat-label">Wins</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="stat-earnings">₹0</span>
+                            <span class="stat-label">Earnings</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="stat-rating">0</span>
+                            <span class="stat-label">Rating</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-section">
+                        <h3>📊 Match History</h3>
+                        <div id="match-history" class="match-history">
+                            <!-- Match history will be loaded here -->
+                        </div>
+                    </div>
+
+                    <div class="profile-section">
+                        <h3>⚙️ Settings</h3>
+                        <button onclick="updateProfile()" class="profile-btn">Edit Profile</button>
+                        <button onclick="changePassword()" class="profile-btn">Change Password</button>
+                        <button onclick="logout()" class="profile-btn logout">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Panel -->
+        <div id="admin-page" class="page hidden">
+            <nav class="navbar">
+                <div class="nav-brand">🦅 Apex Eagle - Admin</div>
+                <div class="nav-menu">
+                    <a href="#" onclick="showPage('dashboard')" class="nav-link">Home</a>
+                    <a href="#" onclick="showPage('admin')" class="nav-link active">Admin</a>
+                    <button onclick="logout()" class="nav-btn logout-btn">Logout</button>
+                </div>
+            </nav>
+
+            <div class="admin-container">
+                <h1>⚙️ Admin Dashboard</h1>
+                
+                <div class="admin-tabs">
+                    <button class="admin-tab active" onclick="switchAdminTab('matches')">Matches</button>
+                    <button class="admin-tab" onclick="switchAdminTab('players')">Players</button>
+                    <button class="admin-tab" onclick="switchAdminTab('payouts')">Payouts</button>
+                    <button class="admin-tab" onclick="switchAdminTab('analytics')">Analytics</button>
+                </div>
+
+                <!-- Matches Tab -->
+                <div id="admin-matches" class="admin-tab-content active">
+                    <h3>Manage Tournaments</h3>
+                    <button onclick="openCreateMatchModal()" class="admin-action-btn">+ Create New Match</button>
+                    <div id="admin-matches-list" class="admin-list">
+                        <!-- Matches list -->
+                    </div>
+                </div>
+
+                <!-- Players Tab -->
+                <div id="admin-players" class="admin-tab-content">
+                    <h3>Manage Players</h3>
+                    <div id="admin-players-list" class="admin-list">
+                        <!-- Players list -->
+                    </div>
+                </div>
+
+                <!-- Payouts Tab -->
+                <div id="admin-payouts" class="admin-tab-content">
+                    <h3>Prize Payouts</h3>
+                    <div id="admin-payouts-list" class="admin-list">
+                        <!-- Payouts list -->
+                    </div>
+                </div>
+
+                <!-- Analytics Tab -->
+                <div id="admin-analytics" class="admin-tab-content">
+                    <h3>Analytics</h3>
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <h4>Total Players</h4>
+                            <p id="analytics-players">0</p>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>Active Matches</h4>
+                            <p id="analytics-matches">0</p>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>Total Revenue</h4>
+                            <p id="analytics-revenue">₹0</p>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>Prize Distributed</h4>
+                            <p id="analytics-prizes">₹0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    
+    <!-- Registration Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('registerModal')">&times;</span>
+            <h2>Join Tournament</h2>
+            <p>Enter your Free Fire details to join this scrim.</p>
+            <div class="form-group">
+                <label>Game Name (IGN)</label>
+                <input type="text" id="join-ign" placeholder="Your in-game name">
+            </div>
+            <div class="form-group">
+                <label>Free Fire UID</label>
+                <input type="text" id="join-uid" placeholder="123456789">
+            </div>
+            <button onclick="joinMatch()" class="modal-btn">Join Now</button>
+            <button onclick="closeModal('registerModal')" class="modal-btn cancel">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Add Money Modal -->
+    <div id="addMoneyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addMoneyModal')">&times;</span>
+            <h2>Add Money to Wallet</h2>
+            <div class="form-group">
+                <label>Amount (₹)</label>
+                <input type="number" id="add-amount" placeholder="Enter amount" min="100">
+            </div>
+            <div class="quick-amounts">
+                <button onclick="setAmount(100)" class="quick-btn">₹100</button>
+                <button onclick="setAmount(500)" class="quick-btn">₹500</button>
+                <button onclick="setAmount(1000)" class="quick-btn">₹1000</button>
+                <button onclick="setAmount(5000)" class="quick-btn">₹5000</button>
+            </div>
+            <button onclick="proceedToPayment()" class="modal-btn">Proceed to Payment</button>
+            <button onclick="closeModal('addMoneyModal')" class="modal-btn cancel">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Create Match Modal -->
+    <div id="createMatchModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('createMatchModal')">&times;</span>
+            <h2>Create New Tournament</h2>
+            <div class="form-group">
+                <label>Match Title</label>
+                <input type="text" id="match-title" placeholder="e.g., Sunday Clash Squad">
+            </div>
+            <div class="form-group">
+                <label>Match Type</label>
+                <select id="match-type">
+                    <option>1v1 Solo</option>
+                    <option>2v2 Duo</option>
+                    <option>4v4 Clash Squad</option>
+                    <option>Squad (4 Players)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Date & Time</label>
+                <input type="datetime-local" id="match-time">
+            </div>
+            <div class="form-group">
+                <label>Entry Fee (₹)</label>
+                <input type="number" id="match-entry" placeholder="0 for free">
+            </div>
+            <div class="form-group">
+                <label>Prize Pool (₹)</label>
+                <input type="number" id="match-prize" placeholder="Total prize">
+            </div>
+            <div class="form-group">
+                <label>Max Slots</label>
+                <input type="number" id="match-slots" placeholder="50">
+            </div>
+            <button onclick="createMatch()" class="modal-btn">Create Match</button>
+            <button onclick="closeModal('createMatchModal')" class="modal-btn cancel">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="config/firebase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/matches.js"></script>
+    <script src="js/payments.js"></script>
+    <script src="js/leaderboard.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
